@@ -1769,4 +1769,97 @@ public function deleteDuePaymentVoucher()
 	}
 }
 
+public function payment_DueReport()
+{
+	// added on 18.05.2019 
+	$session = $this->session->userdata('user_data');
+	if($this->session->userdata('user_data'))
+	{
+		$this->load->library('Pdf');
+        $pdf = $this->pdf->load();
+		ini_set('memory_limit', '256M'); 
+			
+		//pre($this->uri->segment(3));
+		$from_date=date('Y-m-d',strtotime($this->uri->segment(3)));
+		$to_date=date('Y-m-d',strtotime($this->uri->segment(4)));
+		$acdm_class=$this->uri->segment(5);
+		$acdm_section=$this->uri->segment(6);
+		$studentid=$this->uri->segment(7);
+		$DueOnly=$this->uri->segment(8);
+		
+		$paymentDueReport=$this->feespaymentmodel->paymentDueReport($from_date,$to_date,$acdm_class,$acdm_section,$studentid,$DueOnly,$session['school_id'],$session['acd_session_id']);
+
+		$this->freeDBResource($this->db->conn_id);
+
+
+		$ReportArr = array();
+		$ReportArr1 = array();
+		foreach ($paymentDueReport as $key => $item) {			
+			$ReportArr[$item->studentname.",".$item->student_id]=[
+				"studentname"=>$item->studentname,
+				"classname"=>$item->classname,
+				"section"=>$item->section,
+				"roll"=>$item->roll	,
+				"PaymentDetails"=>array()				
+			];
+			$ReportArr1[$item->student_id."-PaymentDetails"][]=[
+				"payment_date"=>$item->payment_date,
+				"amount"=>$item->amount,
+				"account_head"=>$item->account_head,
+				"paid"=>$item->paid,
+				"due"=>$item->due
+			];
+			array_push($ReportArr[$item->studentname.",".$item->student_id]['PaymentDetails'],$ReportArr1[$item->student_id."-PaymentDetails"]);
+		}
+		ksort($ReportArr, SORT_STRING );
+
+		$result['company']=  $this->commondatamodel->getCompanyNameById($session['school_id']);
+        $result['companylocation']=  $this->commondatamodel->getCompanyAddressById($session['school_id']);
+		$result['ReportArr']=$ReportArr;
+		$result['fromDate']=$this->uri->segment(3);
+		$result['toDate']=$this->uri->segment(4);
+		$result['DueOnly']=$DueOnly;
+		$result['classname']=$this->commondatamodel->getNameById(array('id'=>$acdm_class),'classname','class_master');
+		$result['section']=$this->commondatamodel->getNameById(array('id'=>$acdm_section),'section','section_master');
+		$result['StudentName']=$this->commondatamodel->getNameById(array('student_id'=>$studentid),'name','student_master');
+		//pre($ReportArr);exit;
+	
+		$page = 'dashboard/admin_dashboard/fees_payment/paymentDueReportPdf';
+		$html = $this->load->view($page, $result, TRUE);
+				// render the view into HTML
+				//$html="Hello";
+		$pdf->WriteHTML($html); 
+		if($DueOnly!=0){
+			$output = 'DueRegister' . date('Y_m_d_H_i_s') . '_.pdf'; 
+		}else{
+			$output = 'ReceiptRegister' . date('Y_m_d_H_i_s') . '_.pdf'; 
+		}
+		
+		$pdf->Output("$output", 'I');
+		exit();
+		
+	}else{
+		redirect('login','refresh');
+	}
+}
+
+function freeDBResource($dbh)
+{
+	do
+	{
+		if($l_result = mysqli_store_result($dbh))
+		{
+			mysqli_free_result($l_result);
+		}
+	}
+	while(mysqli_more_results($dbh)  && mysqli_next_result($dbh));
+}
+
+
+
+
+
+
+
+
 }//end of class

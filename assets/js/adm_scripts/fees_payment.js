@@ -508,6 +508,35 @@ $(document).on('click', '#viewpaymenthistory', function(event){
 }); 
 
 
+$(document).on('click', '#viewpaymentDuePDF', function(event){
+    // added on 18.05.2019 
+    event.preventDefault();
+    
+    var from_date = $('#from_date').val() || 0 ;
+    var to_date = $('#to_date').val() || 0 ;
+    var acdm_class = $('#acdm_class').val() || 0 ;
+    var acdm_section = $('#acdm_section').val() || 0 ;
+    var studentid = $('#studentid').val() || 0 ;
+    var check = $("#DueOnly").is(":checked");
+    if(check) {
+        var DueOnly =1;
+    }else{
+        var DueOnly =0;
+    }
+    
+    //alert(DueOnly);
+              
+     if (validateFormHistory()) {
+
+        var url = basepath+"feespayment/payment_DueReport/"+from_date+"/"+to_date+"/"+acdm_class+"/"+acdm_section+"/"+studentid+"/"+DueOnly;
+        window.open(url, '_blank');
+
+     }//end of class
+                   
+      
+}); 
+
+
 
 $(document).on('change', '#payment_mode', function(event){
     event.preventDefault(); 

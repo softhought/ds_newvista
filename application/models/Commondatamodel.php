@@ -541,6 +541,49 @@ class Commondatamodel extends CI_Model{
 		}
 
 
+	public function getCompanyNameById($id) {        
+			$query = $this->db->select('school_name')
+						  ->from('school_master')
+						  ->where('id',$id)
+						  ->get();
+			$row = $query->row();
+			return $row->school_name;
+			if ($query->num_rows() > 0) {
+				$row = $query->row();
+				return $row->school_name;
+			}else{
+				return '';
+			}
+		}
+	
+	public function getCompanyAddressById($id = '') {
+		$query = $this->db->select('address')
+						  ->from('school_master')
+						  ->where('id',$id)
+						  ->get();
+			if ($query->num_rows() > 0) {
+				$row = $query->row();
+				return $row->address;
+			}else{
+				return '';
+			}
+		}
+
+	public function getNameById($where,$select,$table) {
+		$query = $this->db->select($select)
+						  ->from($table)
+						  ->where($where)
+						  ->get();
+			//q();
+			if ($query->num_rows() > 0) {
+				$row = $query->row();
+				return $row->$select;
+			}else{
+				return '';
+			}
+		}
+
+
 	
 	
 }

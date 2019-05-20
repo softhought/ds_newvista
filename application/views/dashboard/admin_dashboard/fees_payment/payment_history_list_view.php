@@ -140,12 +140,22 @@
                         </div>
             </div>
            </div>
+          <div class="row">
+            <div class="col-md-4 "></div>
+            <div class="col-md-4">
+              <div class="form-group"> 
+                  <label for="DueOnly" class=""><input type="checkbox" id="DueOnly" name="DueOnly" value=""> Only Due Payments</label> 
+              </div>
+            </div>
+          </div>
             
          <p id="payhismsg" class="form_error"></p>
-                 <div class="row">
+                 <div class="row">                    
                     <div class="col-md-offset-4 col-md-4 btnview">
-              <button type="submit" class="btn btn-primary formBtn viewbtn" id="viewpaymenthistory">View</button>
-              </div>
+                      <button type="submit" class="btn btn-primary formBtn viewbtn" id="viewpaymenthistory">View</button>
+                      <button type="submit" class="btn btn-primary formBtn Pdfviewbtn" id="viewpaymentDuePDF"><i class="glyphicon glyphicon-file"></i>&nbsp;PDF</button>
+                    </div>
+                    
                  </div>
              <?php echo form_close(); ?>
 

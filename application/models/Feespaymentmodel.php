@@ -796,5 +796,24 @@ class Feespaymentmodel extends CI_Model{
              return $data;
          }
 	}
+
+	public function paymentDueReport($from_date,$to_date,$acdm_class,$acdm_section,$studentid,$DueOnly,$school_id,$acd_session_id)
+	{
+		$data=array();
+		$call_procedure = "CALL st_payment_DueReport('".$from_date."','".$to_date."','".$acdm_class."','".$acdm_section."',$studentid,$DueOnly,'".$school_id."','".$acd_session_id."')";
+		$query = $this->db->query($call_procedure);
+		//q();
+		if ($query->num_rows() > 0) {
+			foreach ($query->result() as $rows) {
+				 $data[] = 	$rows;		
+			}
+		 
+			return $data;
+		} 
+		
+		else {
+			return $data;
+		}
+	}
 	
 } //end of class
