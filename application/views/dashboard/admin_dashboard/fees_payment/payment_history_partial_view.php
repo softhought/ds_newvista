@@ -24,6 +24,7 @@
                 <th>Roll</th>
                 <th>Receipt date</th>
                 <th>Amount</th>
+                <th style="width: 157px;">A/C Head</th>
                 <th>Receipt</th>
                 <th>Due</th>
                 <th>Action</th>                                                   
