@@ -136,12 +136,75 @@ $(document).ready(function(){
     });
 
 
-    $('.deleteBtn').click(function() {
+    // $('.deleteBtn').click(function() {
+    //     var splitid=$(this).attr("id").split('_');
+    //     var id=splitid[1];
+    //     var voucher_id=parseInt($('#deleteBtn_'+id).data('text')); 
+       
+    //     alert(voucher_id); 
+    //     $.confirm({
+    //         title: 'Confirm!',
+    //         content: 'Are you Sure you want to delete ?',
+    //         buttons: {
+    //             confirm: function () {
+    //                 $.ajax({
+    //                     type: 'POST',
+    //                     url: basepath+'journal/deleteVoucher',
+    //                     data: {voucher_id:voucher_id},
+    //                     dataType: 'json',
+    //                     contentType: "application/x-www-form-urlencoded; charset=UTF-8",
+    //                     success: function(result) {
+    //                         if (result.msg_status == 200) {                 
+                                
+    //                             $("#modal-success").modal({
+    //                                 "backdrop": "static",
+    //                                 "keyboard": true,
+    //                                 "show": true
+    //                             });
+    //                             var addurl = basepath + "journal";
+                            
+    //                             $("#appendBody").text(result.msg_data);
+    //                             $("#redirectToListsuccess").attr("href", addurl);
+
+    //                         } 
+    //                         else {
+    //                             // alert(fees_id+" have data");                    
+    //                             $("#modal-danger").modal({
+    //                                 "backdrop": "static",
+    //                                 "keyboard": true,
+    //                                 "show": true
+    //                             });
+    //                             var addurl = basepath + "journal";
+                            
+    //                             $("#dengAppendBody").text(result.msg_data);
+    //                             $("#redirectToListerror").attr("href", addurl);
+                            
+                                
+    //                         }                
+                            
+    //                     },
+    //                     error: function(jqXHR, exception) {
+    //                         var msg = '';
+    //                     }
+    //                 });
+    //             },
+    //             cancel: function () {
+    //                 // $.alert('Canceled!');
+    //             }
+    //         }
+    //     });
+              
+    // });
+
+
+
+    $(document).on('click','.deleteBtn',function()
+    {
         var splitid=$(this).attr("id").split('_');
         var id=splitid[1];
         var voucher_id=parseInt($('#deleteBtn_'+id).data('text')); 
        
-        // alert(fees_id); 
+      //  alert(voucher_id); 
         $.confirm({
             title: 'Confirm!',
             content: 'Are you Sure you want to delete ?',
@@ -193,7 +256,7 @@ $(document).ready(function(){
                 }
             }
         });
-              
+
     });
 
 

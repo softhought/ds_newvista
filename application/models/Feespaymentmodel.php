@@ -346,12 +346,14 @@ class Feespaymentmodel extends CI_Model{
 		$data=array();
 		$where=[
 			"payment_id"=>$payment_id,
-			"voucher_tag"=>'R',
+			//"voucher_tag"=>'R',
 			"voucher_type"=>'C'
 		];
+		$whereIn=array('R','J');
 		$query=$this->db->select('*')
 						->from('payment_voucher_ref')					
 						->where($where)
+						->where_in('voucher_tag',$whereIn)
 						->get();
 		if ($query->num_rows()>0) {
 			foreach($query->result() as $rows)
@@ -403,6 +405,27 @@ class Feespaymentmodel extends CI_Model{
 			'payment_id'=>$payment_id,
 			"voucher_type"=>"C",
 			"voucher_tag"=>"R"
+		];
+		$query=$this->db->select("SUM(paid_amount) AS total_C_amnt")
+				->from('payment_voucher_ref')
+				->where($where)
+				->get();
+		if($query->num_rows()> 0)
+		{
+            foreach ($query->result() as $rows)
+			{
+				return $rows->total_C_amnt;
+            }
+        }else{
+             return 0;
+         }
+	}
+	public function getSumOfDiscountedAmount($payment_id)
+	{
+		$where=[
+			'payment_id'=>$payment_id,
+			"voucher_type"=>"C",
+			"voucher_tag"=>"J"
 		];
 		$query=$this->db->select("SUM(paid_amount) AS total_C_amnt")
 				->from('payment_voucher_ref')

@@ -106,6 +106,7 @@
                                         <th>Account(s)</th>
                                         <th>Payable Amount</th>
                                         <th>Paid Amount</th>
+                                        <th>Adjustment Amount</th>
                                         <th>Due Amount</th>
                                     </tr>
                                 </thead>
@@ -114,10 +115,12 @@
                                 $totalDue=0;
                                 $totalPaid=0;
                                 $totalAmount=0;
+                                $totalAdjustment=0;
                                 foreach ($value['PaymentDetails'] as $PaymentDetails) { 
                                     foreach ($PaymentDetails as $Details) {  //pre($Details);
                                         $totalDue+=$Details['due'];  
                                         $totalPaid+=$Details['paid'];
+                                        $totalAdjustment+=$Details['AdjustmentAmnt'];
                                         $totalAmount+=$Details['amount'];
                                     ?>
                                     <tr>
@@ -125,6 +128,7 @@
                                         <td><?php echo $Details['account_head']; ?></td>
                                         <td class="amount"><?php echo number_format($Details['amount'], 2); ?></td>
                                         <td class="amount"><?php echo number_format($Details['paid'], 2); ?></td>
+                                        <td class="amount"><?php echo number_format($Details['AdjustmentAmnt'], 2); ?></td>
                                         <td class="amount"><?php echo number_format($Details['due'], 2); ?></td>
                                     </tr>
                                     <?php }} ?>
@@ -132,6 +136,7 @@
                                         <td colspan='2'>Total</td>
                                         <td class="amount"><?php echo  number_format($totalAmount, 2); ?></td>
                                         <td class="amount"><?php echo  number_format($totalPaid, 2); ?></td>
+                                        <td class="amount"><?php echo  number_format($totalAdjustment, 2); ?></td>
                                         <td class="amount"><?php echo  number_format($totalDue, 2); ?></td>
                                     </tr>
                                 </tbody>

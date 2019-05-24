@@ -26,8 +26,9 @@
                 <th>Amount</th>
                 <th style="width: 157px;">A/C Head</th>
                 <th>Receipt</th>
+                <th>Adjstment</th>
                 <th>Due</th>
-                <th>Action</th>                                                   
+                <th style="width: 64px;">Action</th>                                                   
             </tr>
         </thead>                                            
     </table>
@@ -114,7 +115,7 @@
     $.ajax({
             type: "POST",
             url: basepath+'feespayment/feespaymentouchermodal',
-            data: {payment_id:data[8]},           
+            data: {payment_id:data[9]},           
             success: function (result) {
                 //  console.log(result);
                 $("#titleText").html('Receipt Voucher'); 
@@ -151,7 +152,7 @@
             type: "POST",
             url: basepath+'feespayment/checkDuePayment',
             
-            data: {payment_id:data[8]},           
+            data: {payment_id:data[9]},           
             success: function (result) {
                 // console.log(result.status);
                 $("#titleText").html(result.title);
@@ -193,7 +194,7 @@
                     $.ajax({
                         type: "POST",
                         url: basepath+'feespayment/deleteFeesPayment',
-                        data: {payment_id:data[8]},           
+                        data: {payment_id:data[9]},           
                         success: function (result) {
                             // console.log(result.status);
                             if (result.status == 200) {                 

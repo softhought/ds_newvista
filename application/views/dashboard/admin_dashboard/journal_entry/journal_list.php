@@ -1,6 +1,8 @@
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jquery-confirm/3.3.2/jquery-confirm.min.css">
-<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-confirm/3.3.2/jquery-confirm.min.js"></script> 
+<link rel="stylesheet" href="<?php echo base_url(); ?>assets/css/jquery-confirm.min.css">
+<!-- <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jquery-confirm/3.3.2/jquery-confirm.min.css"> -->
+<!-- <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-confirm/3.3.2/jquery-confirm.min.js"></script>  -->
 <script src="<?php echo base_url(); ?>assets/js/adm_scripts/journal.js"></script>   
+<script src="<?php echo base_url(); ?>assets/js/jquery-confirm.min.js"></script>   
 <style>
 #journalList td{
 vertical-align: inherit;

@@ -126,6 +126,7 @@ class Csvuploader extends CI_Controller{
              
        
           echo json_encode($result_data);
+          
 
     }
     public function listLoad(){

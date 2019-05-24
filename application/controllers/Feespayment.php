@@ -1386,6 +1386,47 @@ public function updatePaymentMaster(){
 		}
 	}
 
+	public function duePaymentAdjustmentAddEdit()
+	{
+		//	added on 24.05.2019
+		$session = $this->session->userdata('user_data');
+		if($this->session->userdata('user_data'))
+		{
+			$payment_id=$this->input->post('payment_id');	
+			
+			$result['PaymentModeList']=$this->commondatamodel->getAllDropdownData('payment_mode_master');
+			$result['AccountList']=$this->commondatamodel->getListOfAccountWhereAccountsAreNotInBankAndCashGroup($session['school_id']);
+			if ($this->uri->segment(3)) {
+				$voucher_id=$this->uri->segment(3);
+				$payment_id=$this->uri->segment(4);
+				$result['payment_id']=$payment_id;
+				$result['mode']='EDIT';
+				$result['voucher_id']=$voucher_id;
+				$result['CreditAccountId']=$this->feespaymentmodel->getDebitAccountIdByVoucherId($voucher_id);
+				$result['VoucherPaymentRef']=$this->feespaymentmodel->getVoucherPaymentRefData('voucher_id',$voucher_id);
+				
+				$title="Edit Due Fees Adjustment";
+			}else {
+				$result['payment_id']=$payment_id;
+				$result['mode']='ADD';
+				$title="Due Fees Adjustment";
+			}
+
+			$page = "dashboard/admin_dashboard/fees_payment/due_payment_adjustment_partial_view.php";
+			$partial_view = $this->load->view($page, $result, TRUE);
+			$json_response = array(
+				"status" => 200,
+				"title"=>$title,
+				"modal" =>$partial_view
+			);
+			header('Content-Type: application/json');
+			echo json_encode( $json_response );
+			exit;
+		}else{
+			redirect('login','refresh');
+		}
+	}
+
 	public function checkDuePayment()
 	{
 		$session = $this->session->userdata('user_data');
@@ -1402,12 +1443,14 @@ public function updatePaymentMaster(){
 			$dueAmount=$paymentData->total_amount-$paymentData->paid_amount;
 			if ($dueAmount>0) {
 				
-					$paidamnt_C=$this->feespaymentmodel->getSumOfPaidAmount($payment_id);
+					$paidamnt_C=$this->feespaymentmodel->getSumOfPaidAmount($payment_id);// paymnt from due Receipt  
+					$DiscountedAmount=$this->feespaymentmodel->getSumOfDiscountedAmount($payment_id);
 					$totalPaidAmnt=$paymentData->paid_amount+$paidamnt_C;
-					$totalDueAmnt=$paymentData->total_amount-$totalPaidAmnt;					
+					$totalDueAmnt=($paymentData->total_amount-$totalPaidAmnt)-$DiscountedAmount;					
 					$result['totalAmnt']=$paymentData->total_amount;					
 					$result['payment_id']=$payment_id;					
 					$result['VoucherData']=$this->feespaymentmodel->getDuePaymentDataByPaymentId($payment_id);
+					//pre($result['VoucherData']);
 					$page = "dashboard/admin_dashboard/fees_payment/due_payment_list_partial_view.php";
 					$partial_view = $this->load->view($page, $result, TRUE);
 				
@@ -1420,7 +1463,7 @@ public function updatePaymentMaster(){
 
 				$json_response = array(
 					"status" => 200,
-					"title"=>'Receipt Due Fees '.$text,
+					"title"=>'Receipt / Adjust Due Fees '.$text,
 					"modal" =>$partial_view
 				);
 
@@ -1428,7 +1471,8 @@ public function updatePaymentMaster(){
 
 				$json_response = array(
 					"status" => 201,
-					"modal" => ""
+					"title"=>'Receipt / Adjust Due Fees ',
+					"modal" => "No Due Found"
 				);
 			}
 			
@@ -1658,6 +1702,223 @@ public function updatePaymentMaster(){
 		}
 	}
 
+	public function dueAdjustmentPayment_action()
+	{
+		$session = $this->session->userdata('user_data');
+		if($this->session->userdata('user_data'))
+		{
+			$school_id=$session['school_id'];
+			$acd_session_id=$session['acd_session_id'];
+			$accnt_year_id=$session['accnt_year_id'];
+			$userid=$session['userid'];
+
+			 //pre($this->input->post());exit;
+			$payment_date=date("Y-m-d",strtotime($this->input->post('payment_date')));
+			$paid_amount=$this->input->post('paid_amount');
+			$payment_mode=$this->input->post('payment_mode');
+			$account_debit=$this->input->post('account_debit');
+			$cheque_no=$this->input->post('cheque_no');
+			$bank_name=$this->input->post('bank_name');
+			
+			$branch_name=$this->input->post('branch_name');
+			$narration=$this->input->post('narration');
+			$payment_id=$this->input->post('payment_id');
+			$mode=$this->input->post('mode');
+
+			if ($this->input->post('cheque_date')!="") {
+				$cheque_date=date("Y-m-d",strtotime($this->input->post('cheque_date')));
+			}else {
+				$cheque_date=NULL;
+			}
+
+			if ($mode=='ADD') {
+					/* insert into voucher master  */
+					$insert_arr=array(
+						"voucher_number"=>$this->createVoucherNumber($school_id,$acd_session_id,'JV'),
+						"voucher_date"=> $payment_date,
+						"narration"=>$narration,
+						"cheque_number"=>$cheque_no,
+						"cheque_date"=>$cheque_date,
+						"chq_clear_on"=>"",
+						"is_chq_clear"=>"",
+						"transaction_type"=>'JV',
+						"created_by"=>$userid,
+						"school_id"=>$school_id,
+						"acdm_session_id"=>$acd_session_id,
+						"accnt_year_id"=>$accnt_year_id,
+						"serial_number"=>"0",
+						"vouchertype"=>NULL,
+						"paid_to"=>NULL,					
+						"total_debit"=>$paid_amount,					
+						"total_credit"=>$paid_amount					
+					);
+					$voucher_master_id=$this->commondatamodel->insertSingleTableDataRerurnInsertId("voucher_master",$insert_arr);
+					// pre($voucher_master_id);exit;
+					/* insert into voucher master  end */
+					
+					
+					$arr_C=array(
+						"voucher_master_id"=>$voucher_master_id,
+						"account_master_id"=>$this->feespaymentmodel->getStudentAccountIdByPaymentId($payment_id),
+						"tran_type"=>NULL,
+						"voucher_amount"=>$paid_amount,
+						"is_debit"=>'N'
+					);
+
+					$arr_D=array(
+						"voucher_master_id"=>$voucher_master_id,
+						"account_master_id"=>$account_debit,
+						"tran_type"=>NULL,
+						"voucher_amount"=>$paid_amount,
+						"is_debit"=>'Y'
+					);
+					$data_arr=array(
+						"payment_id"=>$payment_id,
+						"voucher_id"=>$voucher_master_id,
+						"voucher_tag"=>'J',
+						"payment_mode" => $payment_mode,
+						"paid_amount"=>$paid_amount,
+						"cheque_no"=>$cheque_no,
+						"cheque_date"=>$cheque_date,
+						"bank_name"=>$bank_name,							
+						"branch_name"=>$branch_name,
+						"narration"=>$narration,
+						"voucher_type"=>'C'
+					);
+				$table_arr=array("voucher_detail","voucher_detail","payment_voucher_ref");
+				$ins_data_arr=array($arr_D,$arr_C,$data_arr);
+				$this->commondatamodel->insertMultiTableData($table_arr,$ins_data_arr);
+				$user_activity = array(
+					"activity_module" => 'feespayment',
+					"action" => 'Insert',
+					"from_method" => 'feespayment/dueAdjustmentPayment_action',
+					"user_id" => $session['userid'],
+					"ip_address" => getUserIPAddress(),
+					"user_browser" => getUserBrowserName(),
+					"user_platform" => getUserPlatform()
+					
+				 );
+				
+				$insert=$this->commondatamodel->insertSingleTableData('activity_log',$user_activity);
+				if ($insert) {
+					$json_response = array(
+						"status" => 200,
+						"message"=>"Saved Successfully",
+						
+					);
+				}else {
+					$json_response = array(
+						"status" => 201,
+						"message"=>'having difficulty in saving',
+					);
+				}
+				
+			header('Content-Type: application/json');
+			echo json_encode( $json_response );
+			exit;
+				
+			}else {
+				/******Edit mode******/
+				$voucher_id=$this->input->post('voucher_id');				
+
+				/* update voucher master  */
+				$update_arr=array(							
+					"voucher_date"=> $payment_date,
+					"narration"=>$narration,
+					"cheque_number"=>$cheque_no,
+					"cheque_date"=>$cheque_date,
+					"chq_clear_on"=>"",
+					"is_chq_clear"=>"",
+					"transaction_type"=>'JV',
+					// "transaction_type"=>$prefix[$i],
+					"created_by"=>$userid,
+					"school_id"=>$school_id,
+					"acdm_session_id"=>$acd_session_id,
+					"accnt_year_id"=>$accnt_year_id,
+					"serial_number"=>"0",
+					"vouchertype"=>NULL,
+					"paid_to"=>NULL,					
+					"total_debit"=>$paid_amount,					
+					"total_credit"=>$paid_amount					
+				);
+				$where_voucher_master_id=[
+					"id"=>$voucher_id,					
+				];						
+				$this->commondatamodel->updateSingleTableData('voucher_master',$update_arr,$where_voucher_master_id);
+				/* update voucher master  end */
+				
+				$del_Where=[
+					"voucher_master_id"=>$voucher_id
+				];							
+				$this->commondatamodel->deleteTableData('voucher_detail',$del_Where);
+				
+				$data_arr=array(			
+					
+					"payment_mode" => $payment_mode,
+					"paid_amount"=>$paid_amount,
+					"cheque_no"=>$cheque_no,
+					"cheque_date"=>$cheque_date,
+					"bank_name"=>$bank_name,							
+					"branch_name"=>$branch_name,
+					"narration"=>$narration,
+					
+				);
+				$data_arr_update=array('voucher_id'=>$voucher_id);
+				$this->commondatamodel->updateSingleTableData('payment_voucher_ref',$data_arr,$data_arr_update);
+
+				$user_activity = array(
+								"activity_module" => 'feespayment',
+								"action" => 'Update',
+								"from_method" => 'feespayment/dueAdjustmentPayment_action',
+								"user_id" => $session['userid'],
+								"ip_address" => getUserIPAddress(),
+								"user_browser" => getUserBrowserName(),
+								"user_platform" => getUserPlatform()
+								
+							);
+				
+				$arr_C=array(
+					"voucher_master_id"=>$voucher_id,
+					"account_master_id"=>$this->feespaymentmodel->getStudentAccountIdByPaymentId($payment_id),
+					"tran_type"=>NULL,
+					"voucher_amount"=>$paid_amount,
+					"is_debit"=>'N'
+				);
+
+				$arr_D=array(
+					"voucher_master_id"=>$voucher_id,
+					"account_master_id"=>$account_debit,
+					"tran_type"=>NULL,
+					"voucher_amount"=>$paid_amount,
+					"is_debit"=>'Y'
+				);
+				$tbl_name = array('voucher_detail','voucher_detail','activity_log');
+				$insert_array = array($arr_C,$arr_D,$user_activity);
+				$insert = $this->commondatamodel->insertMultiTableData($tbl_name,$insert_array);
+				if ($insert) {
+					$json_response = array(
+						"status" => 200,
+						"message"=>"Update Successfully",
+						
+					);
+				}else {
+					$json_response = array(
+						"status" => 201,
+						"message"=>'having difficulty While Updating',
+					);
+				}
+				
+			header('Content-Type: application/json');
+			echo json_encode( $json_response );
+			exit;
+
+			}
+
+		}else{
+			redirect('login','refresh');
+		}
+	}
+
 public function deleteFeesPayment()
 {
 	$session = $this->session->userdata('user_data');
@@ -1807,6 +2068,7 @@ public function payment_DueReport()
 				"amount"=>$item->amount,
 				"account_head"=>$item->account_head,
 				"paid"=>$item->paid,
+				"AdjustmentAmnt"=>$item->AdjustmentAmnt,
 				"due"=>$item->due
 			];
 			array_push($ReportArr[$item->studentname.",".$item->student_id]['PaymentDetails'],$ReportArr1[$item->student_id."-PaymentDetails"]);

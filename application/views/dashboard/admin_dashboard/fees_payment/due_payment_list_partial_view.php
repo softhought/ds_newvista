@@ -52,7 +52,7 @@
             </table>
             </td>
             <td>
-              <button id='editDueData_<?php echo $value['voucher_id'];?>' data-pay="<?php echo $payment_id; ?>" data-text="<?php echo $value['voucher_id'];?>" class='btn btn-primary btn-xs editDueData'><span class='glyphicon glyphicon-pencil'></span></button>  &nbsp;&nbsp;
+              <button id='editDueData_<?php echo $value['voucher_id'];?>' data-voucher_tag="<?php echo $value['voucher_tag']; ?>" data-pay="<?php echo $payment_id; ?>" data-text="<?php echo $value['voucher_id'];?>" class='btn btn-primary btn-xs editDueData'><span class='glyphicon glyphicon-pencil'></span></button>  &nbsp;&nbsp;
               <button id='deleteDueData_<?php echo $value['voucher_id'];?>' data-pay="<?php echo $payment_id; ?>" data-text="<?php echo $value['voucher_id'];?>" class='btn btn-danger btn-xs deleteDueData'><span class='glyphicon glyphicon-trash'></span></button>
             </td>
             
@@ -69,7 +69,8 @@
               <br>
               <div class='row' style='text-align: center;'>
                 <div class='col-md-12'>
-                    <button  class='btn btn-primary btn-lg'  data-text="<?php echo $payment_id; ?>" id='payDue'>Receipt Due</button>                  
+                <button  class='btn btn-primary btn-lg'  data-text="<?php echo $payment_id; ?>" id='payDue'>Receipt Due</button>   
+                <button  class='btn btn-primary btn-lg'  data-text="<?php echo $payment_id; ?>" id='DueAdjustment'>Due Adjustment </button>                  
                 </div>
               </div>
 
@@ -115,15 +116,60 @@ $('#payDue').on('click',function(){
             }); /*end ajax call*/
 });
 
+$('#DueAdjustment').on('click',function(){   
+        var paymentId=$('#payDue').attr('data-text'); 
+        // alert(paymentId);       
+        var basepath = $("#basepath").val();  
+    $.ajax({
+            type: "POST",
+            url: basepath+'feespayment/duePaymentAdjustmentAddEdit',
+            data: {payment_id:paymentId},           
+            success: function (result) {
+             
+                //  console.log(result);              
+                $("#DuePaymentTitleText").html(result.title);
+                $("#AddEditData").html(result.modal); 
+                $('#DuePaymentAddEdit').modal('show');            
+            }, 
+            error: function (jqXHR, exception) {
+                  var msg = '';
+                    if (jqXHR.status === 0) {
+                        msg = 'Not connect.\n Verify Network.';
+                    } else if (jqXHR.status == 404) {
+                        msg = 'Requested page not found. [404]';
+                    } else if (jqXHR.status == 500) {
+                        msg = 'Internal Server Error [500].';
+                    } else if (exception === 'parsererror') {
+                        msg = 'Requested JSON parse failed.';
+                    } else if (exception === 'timeout') {
+                        msg = 'Time out error.';
+                    } else if (exception === 'abort') {
+                        msg = 'Ajax request aborted.';
+                    } else {
+                        msg = 'Uncaught Error.\n' + jqXHR.responseText;
+                    }
+                   // alert(msg);  
+                }
+            }); /*end ajax call*/
+});
+
 $('.editDueData').on('click',function(){  
     var id=$(this).attr('id') ;
         var voucherId=$('#'+id).attr('data-text'); 
         var paymentId=$('#'+id).attr('data-pay'); 
+        var voucher_tag=$('#'+id).attr('data-voucher_tag'); 
         // alert(paymentId);       
         var basepath = $("#basepath").val();  
+        if(voucher_tag=='J')
+        {
+            var URL=basepath+'feespayment/duePaymentAdjustmentAddEdit/'+voucherId+'/'+paymentId;
+        }else{
+            var URL=basepath+'feespayment/duePaymentAddEdit/'+voucherId+'/'+paymentId;
+        }
+        
     $.ajax({
             type: "GET",
-            url: basepath+'feespayment/duePaymentAddEdit/'+voucherId+'/'+paymentId,
+            url: URL,
             // data: {voucher_id:},           
             success: function (result) {
              

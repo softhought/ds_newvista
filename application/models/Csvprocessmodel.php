@@ -45,7 +45,7 @@ class csvprocessmodel extends CI_Model{
             );*/
 
             $session = $this->session->userdata('user_data');
-            $call_procedure = "CALL st_payment_history('".$fromdt."','".$todt."','".$classid."','".$sectionid."',$studentid,'".$session['school_id']."','".$session['acd_session_id']."')";
+          $call_procedure = "CALL st_payment_history('".$fromdt."','".$todt."','".$classid."','".$sectionid."',$studentid,'".$session['school_id']."','".$session['acd_session_id']."')";
             $query = $this->db->query($call_procedure);
 
            /* $this->db->free_db_resource();*/
@@ -58,7 +58,9 @@ class csvprocessmodel extends CI_Model{
                     "roll",
                     "payment_date",
                     "amount",
+                    "account_head",
                     "paid",
+                    "AdjustmentAmnt",
                     "due",
                     "payment_master_id"
             
