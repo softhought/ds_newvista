@@ -104,7 +104,7 @@
                 });
     $('#csvDatas tbody').on( 'click', '#editData', function () {
         var data = table.row( $(this).parents('tr') ).data();
-        window.location.href = basepath+'feespayment/paymentEdit/' + data[ 8 ];
+        window.location.href = basepath+'feespayment/paymentEdit/' + data[ 10 ];
        // alert( data[0] +"'s salary is: "+ data[ 0 ] );
     } );
     $('#csvDatas tbody').on( 'click', '#viewVoucher', function () {
@@ -115,7 +115,7 @@
     $.ajax({
             type: "POST",
             url: basepath+'feespayment/feespaymentouchermodal',
-            data: {payment_id:data[9]},           
+            data: {payment_id:data[10]},           
             success: function (result) {
                 //  console.log(result);
                 $("#titleText").html('Receipt Voucher'); 
@@ -152,7 +152,7 @@
             type: "POST",
             url: basepath+'feespayment/checkDuePayment',
             
-            data: {payment_id:data[9]},           
+            data: {payment_id:data[10]},           
             success: function (result) {
                 // console.log(result.status);
                 $("#titleText").html(result.title);
@@ -194,7 +194,7 @@
                     $.ajax({
                         type: "POST",
                         url: basepath+'feespayment/deleteFeesPayment',
-                        data: {payment_id:data[9]},           
+                        data: {payment_id:data[10]},           
                         success: function (result) {
                             // console.log(result.status);
                             if (result.status == 200) {                 
