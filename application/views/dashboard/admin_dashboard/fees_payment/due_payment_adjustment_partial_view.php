@@ -32,7 +32,7 @@ $( ".datepicker" ).datepicker({
                 
                     <div id="account_debit_div" class="col-md-4">
                         <div class="form-group">
-                            <label for="account_debit">Account to be Credit</label>  
+                            <label for="account_debit">Account to be Debit</label>  
                             <select id="account_debit" name="account_debit" class="form-control selectpicker" data-show-subtext="true" data-live-search="true" >
                             <option value="0">Select</option> 
                             <?php
