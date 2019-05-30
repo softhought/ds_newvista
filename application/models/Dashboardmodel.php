@@ -149,8 +149,144 @@ class Dashboardmodel extends CI_Model{
                 return $data;
     }
 
+    // public function totalDueThisMonth($acdm_session_id,$school_id,$month_id)
+    // {
+    //     return $this->getClassIdInFessSession($acdm_session_id,$school_id,$month_id);
+    // }
     
+    //public function getClassIdInFessSession($acdm_session_id,$school_id,$month_id) // class wise student list
+    public function totalDueThisMonth($acdm_session_id,$school_id,$month_id) // class wise student list
+	{
+        $data=[];
+		$where=[
+            "fees_session.acdm_session_id"=>$acdm_session_id,
+            "fees_session.school_id"=>$school_id		
+		];
+		$query=$this->db->select("fees_session.class_id,class_master.classname")
+                ->from('fees_session')
+                ->join('class_master','fees_session.class_id=class_master.id','INNER')
+                ->where($where)
+                ->group_by('fees_session.class_id')
+				->get();
+		if($query->num_rows()> 0)
+		{
+            foreach ($query->result() as $rows)
+			{
+				//$data[]= $rows->class_id;
+				$data[$rows->classname]= $this->getAllStudentByClassId($acdm_session_id,$school_id,$rows->class_id,$rows->classname,$month_id);
+            }
+            return $data;
+        }else{
+             return $data;
+         }
+    }
 
+    public function getAllStudentByClassId($acdm_session_id,$school_id,$class_id,$classname,$month_id) // student list
+    {
+
+        $data=[];
+		$where=[
+            "academic_details.acdm_session_id"=>$acdm_session_id,
+            "academic_details.school_id"=>$school_id,
+            "academic_details.class_id"=>$class_id	
+		];
+		$query=$this->db->select("student_master.student_id,student_master.name")
+                ->from('academic_details')
+                ->join('student_master','academic_details.student_id=student_master.student_id','INNER')
+                ->where($where)
+				->get();
+		if($query->num_rows()> 0)
+		{
+            foreach ($query->result() as $rows)
+			{
+                $paid_amount=$this->getSumOfPaidAmount($rows->student_id,$month_id,$acdm_session_id,$school_id);
+                $total_fees_amount=$this->getSumOfFeesAmountByMonthClassWise($acdm_session_id,$school_id,$class_id,$month_id);
+                $data[$rows->name.'-'.$rows->student_id]= [
+                   "student_id"=>$rows->student_id,
+                   "student_name"=>$rows->name,
+                   "classname"=>$classname,
+                   "month_id"=>$month_id,
+                   "paid_amount"=>$paid_amount,
+                   "total_fees_amount"=>$total_fees_amount,
+                   "total_due_amount_monthly"=>$total_fees_amount-$paid_amount
+                ];
+            }
+            return $data;
+        }else{
+             return $data;
+         }
+    }
+    
+    public function getSumOfPaidAmount($student_id,$month_id,$acdm_session_id,$school_id)
+	{
+		
+		$sql="SELECT 
+        ((SELECT IFNULL(SUM(payment_voucher_ref.paid_amount),0) FROM payment_voucher_ref  
+        WHERE payment_voucher_ref.payment_id IN(SELECT GROUP_CONCAT(payment_master.payment_id) FROM payment_master 
+        INNER JOIN payment_details ON payment_master.payment_id = payment_details.payment_master_id 
+        WHERE payment_master.student_id = $student_id AND payment_details.month_id =$month_id AND payment_master.acdm_session_id=$acdm_session_id AND payment_master.school_id=$school_id)
+        AND payment_voucher_ref.voucher_tag = 'J'  AND payment_voucher_ref.voucher_type = 'C' )+
+        (SELECT IFNULL(SUM( payment_voucher_ref.paid_amount),0) FROM payment_voucher_ref  
+        WHERE payment_voucher_ref.payment_id  IN(SELECT GROUP_CONCAT(payment_master.payment_id) FROM payment_master 
+        INNER JOIN payment_details ON payment_master.payment_id = payment_details.payment_master_id 
+        WHERE payment_master.student_id = $student_id AND payment_details.month_id =$month_id AND payment_master.acdm_session_id=$acdm_session_id AND payment_master.school_id=$school_id)
+        AND payment_voucher_ref.voucher_tag = 'R' )) AS paid_amount ";
+		$query=$this->db->query($sql);
+       //q();
+		if($query->num_rows()> 0)
+		{
+            foreach ($query->result() as $rows)
+			{
+				return $rows->paid_amount;
+            }
+        }else{
+             return 0;
+         }
+	}
+    public function getSumOfFeesAmountByMonthClassWise($acdm_session_id,$school_id,$class_id,$month_id)
+	{
+		$where=[
+			"fees_session.acdm_session_id"=>$acdm_session_id,			
+			"fees_session.school_id"=>$school_id,			
+			"fees_session.class_id"=>$class_id,			
+			"fees_strucrure_month_dtl.month_id"=>$month_id			
+		];
+		$query=$this->db->select("SUM(fees_session.amount) as total_fees_amount")
+                ->from('fees_session')
+                ->join('class_master','fees_session.class_id=class_master.id','INNER')
+                ->join('fees_strucrure_month_dtl','fees_strucrure_month_dtl.fees_structure_id=fees_session.fees_id','INNER')
+				->where($where)
+				->get();
+		if($query->num_rows()> 0)
+		{
+            foreach ($query->result() as $rows)
+			{
+				return $rows->total_fees_amount;
+            }
+        }else{
+             return 0;
+         }
+	}
+
+    public function getMonthIdByMonthCode($MonthCode)
+    {
+        $where=[
+			'month_code'=>$MonthCode,			
+		];
+		$query=$this->db->select("id")
+				->from('month_master')
+				->where($where)
+				->get();
+		if($query->num_rows()> 0)
+		{
+            foreach ($query->result() as $rows)
+			{
+				return $rows->id;
+            }
+        }else{
+             return 0;
+         }
+    }
 
 
 

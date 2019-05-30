@@ -9,7 +9,7 @@
 
 }
 .viewbtn{
-  margin-left: 145px;
+  margin-left: 84px;
 }
 .orleb{
   
@@ -51,13 +51,13 @@
             <div class="col-md-2" style="">
                 <div class="form-group">
                      <label for="from_date">From Date<span class="req-star-mark">*</span></label>
-                     <input type="text"  class="form-control custom_frm_input datepicker"  name="from_date" id="from_date"  placeholder="dd-mm-yy" value="" style="" />
+                     <input type="text"  class="form-control custom_frm_input datepicker"  name="from_date" id="from_date"  placeholder="dd-mm-yy" value="" style="" autocomplete="off"/>
                         </div>
             </div>
             <div class="col-md-2">
                 <div class="form-group">
                      <label for="to_date">To Date<span class="req-star-mark">*</span></label>
-                     <input type="text"  class="form-control custom_frm_input datepicker"  name="to_date" id="to_date"  placeholder="dd-mm-yy" value="" style="" />
+                     <input type="text"  class="form-control custom_frm_input datepicker"  name="to_date" id="to_date"  placeholder="dd-mm-yy" value="" style="" autocomplete="off"/>
                         </div>
             </div>
            </div>

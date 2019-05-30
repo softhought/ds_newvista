@@ -52,7 +52,7 @@ $( ".datepicker" ).datepicker({
                     <div id="account_debit_div" class="col-md-4">
                         <div class="form-group">
                             <label for="account_debit">Account to be Debited</label>  
-                            <select id="account_debit" name="account_debit" class="form-control selectpicker" data-show-subtext="true" data-live-search="true" >
+                            <select id="account_debit" autocomplete="off" name="account_debit" class="form-control selectpicker" data-show-subtext="true" data-live-search="true" >
                             <option value="0">Select</option> 
                             <?php
                             foreach ($AccountList as $value) {
@@ -72,7 +72,7 @@ $( ".datepicker" ).datepicker({
                     <div style="display:none;" id="cheque_no_div" class="col-md-4">
                         <div class="form-group">
                             <label for="cheque_no">Cheque No.</label>
-                            <input type="text" class="form-control" name="cheque_no" value="<?php if ($mode=='EDIT') { echo $VoucherPaymentRef['cheque_no'];}?>" id="cheque_no" placeholder="Enter Cheque No.">
+                            <input type="text" autocomplete="off" class="form-control" name="cheque_no" value="<?php if ($mode=='EDIT') { echo $VoucherPaymentRef['cheque_no'];}?>" id="cheque_no" placeholder="Enter Cheque No.">
                         </div>
                     </div>
                     <!-- </div>
@@ -80,14 +80,14 @@ $( ".datepicker" ).datepicker({
                     <div style="display:none;" id="bank_name_div" class="col-md-4">
                         <div class="form-group">
                             <label for="bank_name">Bank</label>  
-                            <input name="bank_name" id="bank_name" value="<?php if ($mode=='EDIT') { echo $VoucherPaymentRef['bank_name'];}?>" class="form-control" placeholder="Enter Bank Name">              
+                            <input name="bank_name" autocomplete="off" id="bank_name" value="<?php if ($mode=='EDIT') { echo $VoucherPaymentRef['bank_name'];}?>" class="form-control" placeholder="Enter Bank Name">              
                         </div>
                     </div>
                     <div class="col-sm-2 col-md-2 col-xs-12"> </div>
                     <div style="display:none;" id="cheque_date_div" class="col-md-4">
                         <div class="form-group">
                             <label for="cheque_date">Cheque Date</label>
-                            <input type="text"   class="form-control custom_frm_input datepicker"  value="<?php if ($mode=='EDIT') { if ($VoucherPaymentRef['cheque_date']!="") {echo date("d-m-Y",strtotime($VoucherPaymentRef['cheque_date']));}else{echo "";}}else{echo date("d-m-Y");}?>"  name="cheque_date" id="cheque_date">
+                            <input type="text"  autocomplete="off"  class="form-control custom_frm_input datepicker"  value="<?php if ($mode=='EDIT') { if ($VoucherPaymentRef['cheque_date']!="") {echo date("d-m-Y",strtotime($VoucherPaymentRef['cheque_date']));}else{echo "";}}else{echo date("d-m-Y");}?>"  name="cheque_date" id="cheque_date">
                         </div>
                     </div>
                     <!-- </div>
@@ -95,7 +95,7 @@ $( ".datepicker" ).datepicker({
                     <div style="display:none;" id="branch_name_div" class="col-md-4">
                         <div class="form-group">
                             <label for="branch_name">Branch Name</label>  
-                            <input name="branch_name" id="branch_name" value="<?php if ($mode=='EDIT') { echo $VoucherPaymentRef['branch_name'];}?>" class="form-control" placeholder="Enter Branch Name">            
+                            <input name="branch_name" autocomplete="off" id="branch_name" value="<?php if ($mode=='EDIT') { echo $VoucherPaymentRef['branch_name'];}?>" class="form-control" placeholder="Enter Branch Name">            
                         </div>
                     </div>
                     <div class="col-sm-2 col-md-2 col-xs-12"> </div>

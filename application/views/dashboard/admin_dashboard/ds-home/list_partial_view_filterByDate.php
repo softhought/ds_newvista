@@ -60,6 +60,8 @@ $('#todayAdmissionlistbtn').on('click',function(){
     
   var from_date=$('#from_date').val(); 
   var to_date=$('#to_date').val();
+  if(validateSrcDate())
+  {
     $.ajax({        
         type: "POST",
         url: basePath + 'dashboard/FilterByDate',
@@ -89,10 +91,41 @@ $('#todayAdmissionlistbtn').on('click',function(){
             // alert(msg);  
         }
     });
+  }
 });
 
 
 } );
+function validateSrcDate()
+{  
+    var from_date = $("#from_date").val();
+    var to_date = $("#to_date").val();
+   
+    
+    $("#payhismsg").text("").css("dispaly", "none").removeClass("form_error");
+    if(from_date=="")
+    {
+        $("#from_date").focus();
+        $("#payhismsg")
+        .text("Error : Select From Date")
+        .addClass("form_error")
+        .css("display", "block");
+        return false;
+    }
+
+    if(to_date=="")
+    {
+        $("#to_date").focus();
+        $("#payhismsg")
+        .text("Error : Select To Date")
+        .addClass("form_error")
+        .css("display", "block");
+        return false;
+    }
+
+
+    return true;
+}
 
 
 </script>
@@ -128,13 +161,14 @@ tr.group:hover {
             <form class="form-inline" id='todayAdmissionlist'>
               <div class="form-group">
                 <label for="from_date">From Date :</label>
-                <input type="text" placeholder="dd/mm/yyyy" autocomplete="off" class="form-control custom_frm_input"  name="from_date" id="from_date"   style="width: 204px;" />
+                <input type="text" placeholder="dd/mm/yyyy" value="<?php if (!empty($from_date)) { echo $from_date; } ?>" autocomplete="off" class="form-control custom_frm_input"  name="from_date" id="from_date"   style="width: 204px;" />
               </div>
               <div class="form-group">
                 <label for="to_date">To Date :</label>
-                <input type="text" autocomplete="off"  class="form-control custom_frm_input" placeholder="dd/mm/yyyy"  name="to_date" id="to_date"  style="width: 204px;" />
+                <input type="text" autocomplete="off"  class="form-control custom_frm_input" placeholder="dd/mm/yyyy"  value="<?php if (!empty($to_date)) { echo $to_date; } ?>"  name="to_date" id="to_date"  style="width: 204px;" />
               </div>              
               <button type="button" id="todayAdmissionlistbtn" class="btn btn-default">Search</button>
+              <!-- <p id="payhismsg" class="form_error" style="display: none;"></p> -->
             </form> 
            <!-- </div> -->
          <!-- <div class="col-sm-4"></div> -->

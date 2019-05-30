@@ -20,13 +20,13 @@ $( ".datepicker" ).datepicker({
                                 echo '<input type="hidden" name="voucher_id" value="'.$voucher_id.'">';
                             }?>
                             <label for="pdate">Adjustment Date</label>      
-                            <input type="text"  class="form-control custom_frm_input datepicker"  name="payment_date" id="payment_date"  placeholder="" value="<?php if ($mode=='EDIT') { echo date("d-m-Y",strtotime($VoucherPaymentRef['voucher_date']));}else{echo date("d-m-Y");}?>" style="width: 204px;" />
+                            <input type="text" autocomplete="off"  class="form-control custom_frm_input datepicker"  name="payment_date" id="payment_date"  placeholder="" value="<?php if ($mode=='EDIT') { echo date("d-m-Y",strtotime($VoucherPaymentRef['voucher_date']));}else{echo date("d-m-Y");}?>" style="width: 204px;" />
                         </div>
                     </div>
                     <div class="col-md-4">
                         <div class="form-group">
                             <label for="paid_amount">Adjustment Amount</label> 
-                            <input type="text"  class="form-control"  name="paid_amount" id="paid_amount" value="<?php if ($mode=='EDIT') { echo $VoucherPaymentRef['paid_amount'];}?>" style="width: 204px;" />
+                            <input type="text" autocomplete="off"  class="form-control"  name="paid_amount" id="paid_amount" value="<?php if ($mode=='EDIT') { echo $VoucherPaymentRef['paid_amount'];}?>" style="width: 204px;" />
                         </div>  
                     </div> 
                 

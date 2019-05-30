@@ -30,6 +30,18 @@ class Dashboard extends CI_Controller {
       $result['TodayCollectionSum']=$this->dashboardmodel->TodayCollectionSum($session['school_id']);
       $result['activeStdentCount']=$this->dashboardmodel->rowcountWithWhere('student_master',$where);
       $result['todayAdmissionCount']=$this->dashboardmodel->rowcountWithWhere('student_master',$where1);
+      
+      $month_id=$this->dashboardmodel->getMonthIdByMonthCode(strtoupper(date('M')));
+      $totalDueThisMonth=$this->dashboardmodel->totalDueThisMonth($session['acd_session_id'],$session['school_id'],$month_id);
+     pre($totalDueThisMonth);
+      $total_due=0;
+      foreach ($totalDueThisMonth as $key => $class) {
+       foreach ($class as $key => $student) {
+         $total_due +=$student['total_due_amount_monthly'];
+       }
+      }
+      $result['totalDueThisMonth']=number_format($total_due,2);
+
       $page = 'dashboard/admin_dashboard/ds-home/dashboard-home';
  
       $header = "";
@@ -58,6 +70,8 @@ class Dashboard extends CI_Controller {
       }
       if($view=="todayAdmissionlist")
       {
+        $data['from_date']="";
+        $data['to_date']="";
         $data['todayAdmissionlist']=$this->dashboardmodel->todayAdmissionStudentListGroupByClassName($session['school_id'],$session['acd_session_id']);
         $this->load->view('dashboard/admin_dashboard/ds-home/list_partial_view_filterByDate', $data); 
       }
@@ -77,9 +91,23 @@ class Dashboard extends CI_Controller {
      $to_date=date_dmy_to_ymd($this->input->post('to_date')); 
       
         $data['todayAdmissionlist']=$this->dashboardmodel->FilterByDateAdmissionStudentListGroupByClassName($session['school_id'],$session['acd_session_id'],$from_date,$to_date);
+        $data['from_date']=$this->input->post('from_date');
+        $data['to_date']=$this->input->post('to_date');
         $this->load->view('dashboard/admin_dashboard/ds-home/list_partial_view_filterByDate', $data); 
      
       
+    }else{
+      redirect('login','refresh');
+    }
+  }
+  public function ListofDueThisMonthList()
+  {
+    $session = $this->session->userdata('user_data');
+    if($this->session->userdata('user_data'))
+    {
+      $month_id=$this->dashboardmodel->getMonthIdByMonthCode(strtoupper(date('M')));
+      $data['totalDueThisMonth']=$this->dashboardmodel->totalDueThisMonth($session['acd_session_id'],$session['school_id'],$month_id);     
+      $this->load->view('dashboard/admin_dashboard/ds-home/due_list_partial_view', $data); 
     }else{
       redirect('login','refresh');
     }
