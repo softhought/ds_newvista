@@ -1,7 +1,7 @@
 <script>
 $(document).ready(function() {
     var groupColumn = 0;
-    var table = $('#todayAdmissionlisttable').DataTable({
+    var table = $('#duelisttable').DataTable({
         "columnDefs": [
             { "visible": false, "targets": groupColumn }
         ],
@@ -29,7 +29,7 @@ $(document).ready(function() {
     } );
  
     // Order by the grouping
-    $('#todayAdmissionlisttable tbody').on( 'click', 'tr.group', function () {
+    $('#duelisttable tbody').on( 'click', 'tr.group', function () {
         var currentOrder = table.order()[0];
         if ( currentOrder[0] === groupColumn && currentOrder[1] === 'asc' ) {
             table.order( [ groupColumn, 'desc' ] ).draw();
@@ -61,7 +61,7 @@ $(document).ready(function() {
         
       <div class="datatalberes" style="max-width:1100px;overflow-x:auto;">
      
-              <table class="table table-bordered table-striped dataTables" id="todayAdmissionlisttable" style="border-collapse: collapse !important;">
+              <table class="table table-bordered table-striped dataTables" id="duelisttable" style="border-collapse: collapse !important;">
                 <thead>
                 <tr>
                   <!-- <th style="width:5%;">Sl</th> -->
@@ -75,6 +75,7 @@ $(document).ready(function() {
                   <th style="width:20%;">Payable Amount</th>
                   <!-- <th >Contact No</th> -->
                   <th style="width:20%;">Paid Amount</th>
+                  <th style="width:20%;">Adjustment Amount</th>
                   <th style="width:20%;">Due Amount</th>
                 
                   
@@ -104,10 +105,11 @@ $(document).ready(function() {
             <!-- <td><?php //echo $value->group; ?></td> -->
             <!-- <td><?php //echo $value->section; ?></td> -->
             <!-- <td><?php //echo $value->rollno; ?></td> -->
-            <td nowrap style="text-align: left;"><?php echo $value['total_fees_amount']; ?></td>
+            <td nowrap style="text-align: right;"><?php echo $value['total_fees_amount']; ?></td>
             <!-- <td><?php //echo $value->father_contact_no; ?></td>    -->
-            <td><?php echo $value['paid_amount']; ?></td>  
-            <td><?php echo $value['total_due_amount_monthly']; ?></td>   
+            <td style="text-align: right;"><?php echo $value['paid_amount']; ?></td>  
+            <td style="text-align: right;"><?php echo $value['adjustment_amount']; ?></td>  
+            <td style="text-align: right;"><?php echo $value['total_due_amount_monthly']; ?></td>   
           </tr>
                     
                 <?php $row++;

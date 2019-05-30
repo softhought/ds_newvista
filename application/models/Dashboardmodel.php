@@ -207,6 +207,7 @@ class Dashboardmodel extends CI_Model{
                    "classname"=>$classname,
                    "month_id"=>$month_id,
                    "paid_amount"=>$paid_amount,
+                   "adjustment_amount"=>$this->getAdjustmentAmount($rows->student_id,$month_id,$acdm_session_id,$school_id),
                    "total_fees_amount"=>$total_fees_amount,
                    "total_due_amount_monthly"=>$total_fees_amount-$paid_amount
                 ];
@@ -238,6 +239,26 @@ class Dashboardmodel extends CI_Model{
             foreach ($query->result() as $rows)
 			{
 				return $rows->paid_amount;
+            }
+        }else{
+             return 0;
+         }
+	}
+    public function getAdjustmentAmount($student_id,$month_id,$acdm_session_id,$school_id)
+	{
+		
+		$sql="SELECT IFNULL(SUM(payment_voucher_ref.paid_amount),0) as adjustment_amount FROM payment_voucher_ref  
+        WHERE payment_voucher_ref.payment_id IN(SELECT GROUP_CONCAT(payment_master.payment_id) FROM payment_master 
+        INNER JOIN payment_details ON payment_master.payment_id = payment_details.payment_master_id 
+        WHERE payment_master.student_id = $student_id AND payment_details.month_id =$month_id AND payment_master.acdm_session_id=$acdm_session_id AND payment_master.school_id=$school_id)
+        AND payment_voucher_ref.voucher_tag = 'J'  AND payment_voucher_ref.voucher_type = 'C' ";
+		$query=$this->db->query($sql);
+       //q();
+		if($query->num_rows()> 0)
+		{
+            foreach ($query->result() as $rows)
+			{
+				return $rows->adjustment_amount;
             }
         }else{
              return 0;

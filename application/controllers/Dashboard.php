@@ -33,7 +33,7 @@ class Dashboard extends CI_Controller {
       
       $month_id=$this->dashboardmodel->getMonthIdByMonthCode(strtoupper(date('M')));
       $totalDueThisMonth=$this->dashboardmodel->totalDueThisMonth($session['acd_session_id'],$session['school_id'],$month_id);
-     pre($totalDueThisMonth);
+    // pre(strtoupper(date('M')));
       $total_due=0;
       foreach ($totalDueThisMonth as $key => $class) {
        foreach ($class as $key => $student) {
